@@ -11,14 +11,17 @@ struct coordsGameObject {
     public GameObject gameObject;
 }
 
-public class MeshGenerator : MonoBehaviour {
+public class ChunkGenerator : MonoBehaviour {
 
     private List<coordsGameObject> chunks;
     private Vector3Int playerChunk;
-    int chunkSize = 64;
+    
+    [SerializeField]
+    int chunkSize = 256;
+    [SerializeField]
+    int chunckAmplitude = 20;
     [SerializeField]
     Material defaultMaterial;
-    Chunk current1, current2, current3, current4, current5, current6, current7, current8, current9;
     public Prefabs prefabs;
 
     private Transform cameraTransform;
@@ -53,17 +56,21 @@ public class MeshGenerator : MonoBehaviour {
             if (xChunk == playerChunk.x     && zChunk == playerChunk.z - 1) chunk2 = true;
             if (xChunk == playerChunk.x + 1 && zChunk == playerChunk.z - 1) chunk3 = true;
         }
-        if (!chunk5) current5 = createChunk(new Vector3Int(playerChunk.x,       playerChunk.y,      playerChunk.z));
 
-        if (!chunk8) current8 = createChunk(new Vector3Int(playerChunk.x,       playerChunk.y,      playerChunk.z + 1));
-        if (!chunk6) current6 = createChunk(new Vector3Int(playerChunk.x + 1,   playerChunk.y,      playerChunk.z));
-        if (!chunk4) current4 = createChunk(new Vector3Int(playerChunk.x - 1,   playerChunk.y,      playerChunk.z));
-        if (!chunk2) current2 = createChunk(new Vector3Int(playerChunk.x,       playerChunk.y,      playerChunk.z - 1));
+        /*
+         Hay que implementar funciones que seteen los vecinos para calcular las normales
+         */
+        if (!chunk5) createChunk(new Vector3Int(playerChunk.x,       playerChunk.y,      playerChunk.z));
 
-        if (!chunk9) current9 = createChunk(new Vector3Int(playerChunk.x + 1,   playerChunk.y, playerChunk.z + 1));
-        if (!chunk7) current7 = createChunk(new Vector3Int(playerChunk.x - 1,   playerChunk.y, playerChunk.z + 1));
-        if (!chunk3) current3 = createChunk(new Vector3Int(playerChunk.x + 1,   playerChunk.y, playerChunk.z - 1));
-        if (!chunk1) current1 = createChunk(new Vector3Int(playerChunk.x - 1,   playerChunk.y, playerChunk.z - 1));
+        if (!chunk8) createChunk(new Vector3Int(playerChunk.x,       playerChunk.y,      playerChunk.z + 1));
+        if (!chunk6) createChunk(new Vector3Int(playerChunk.x + 1,   playerChunk.y,      playerChunk.z));
+        if (!chunk4) createChunk(new Vector3Int(playerChunk.x - 1,   playerChunk.y,      playerChunk.z));
+        if (!chunk2) createChunk(new Vector3Int(playerChunk.x,       playerChunk.y,      playerChunk.z - 1));
+
+        if (!chunk9) createChunk(new Vector3Int(playerChunk.x + 1,   playerChunk.y, playerChunk.z + 1));
+        if (!chunk7) createChunk(new Vector3Int(playerChunk.x - 1,   playerChunk.y, playerChunk.z + 1));
+        if (!chunk3) createChunk(new Vector3Int(playerChunk.x + 1,   playerChunk.y, playerChunk.z - 1));
+        if (!chunk1) createChunk(new Vector3Int(playerChunk.x - 1,   playerChunk.y, playerChunk.z - 1));
     }
 
 
@@ -76,7 +83,7 @@ public class MeshGenerator : MonoBehaviour {
         newChunkGob.transform.position = new Vector3(chunkSize * newChunkKeyInt.x, 0f, chunkSize * newChunkKeyInt.z);
         Chunk chunk = newChunkGob.AddComponent<Chunk>();
 
-        chunk.init(chunkSize, defaultMaterial);
+        chunk.init(chunkSize, chunckAmplitude, defaultMaterial);
         
         for (int i = 0; i < chunks.Count; i++) {
             int xChunk = chunks[i].x;

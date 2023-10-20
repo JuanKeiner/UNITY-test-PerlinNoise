@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.0001
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -352,10 +352,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1833095226}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b202f70627553a045bd66c562a9c5fa7, type: 3}
+  m_Script: {fileID: 11500000, guid: 49ea46ca5c073d644a63f7f9a4377ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaterial: {fileID: 2100000, guid: e28d10f73b53ef841af6beaac11feae6, type: 2}
+  chunkSize: 256
+  chunckAmplitude: 60
+  defaultMaterial: {fileID: 2100000, guid: 39e9096fca7ee3b47932f29c87f22645, type: 2}
   prefabs: {fileID: 11400000, guid: c22a309d53aa08d4ab5602dfbc8b9e8b, type: 2}
 --- !u!4 &1833095230
 Transform:
@@ -435,7 +437,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e28d10f73b53ef841af6beaac11feae6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

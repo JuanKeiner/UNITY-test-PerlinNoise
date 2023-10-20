@@ -5,14 +5,14 @@ using UnityEngine;
 public class Chunk : MonoBehaviour {
 
     Mesh mesh;
-    int chunkSize = 1;
+    int chunkSize = 64;
     int successiveDivisions = 5;
-    private Material defaultMaterial;
+    float amplitude = 20;
+    Material defaultMaterial;
     Vector3[,] vertices;
     float[,,] neighborHeights;
     int[] triadsForTriangles;
     int m;
-    private float amplitude = 20;
     public Prefabs prefabs;
 
     private void CreateMatrix() {
@@ -49,63 +49,49 @@ public class Chunk : MonoBehaviour {
         mesh.vertices = verticesVector;
         mesh.triangles = triadsForTriangles;
 
-        mesh.RecalculateNormals();
+        //mesh.RecalculateNormals();
+        mesh.normals = CalculateNormals();
     }
 
 
-    //Vector3[] CalculateNormals() {
+    Vector3[] CalculateNormals() {
 
-    //    Vector3[] vertexNormals = new Vector3[vertices.Length];
-    //    int triangleCount = triangles.Length / 3;
-    //    for (int i = 0; i < triangleCount; i++) {
-    //        int normalTriangleIndex = i * 3;
-    //        int vertexIndexA = triangles[normalTriangleIndex];
-    //        int vertexIndexB = triangles[normalTriangleIndex + 1];
-    //        int vertexIndexC = triangles[normalTriangleIndex + 2];
+        int[] triangles = mesh.triangles;
 
-    //        Vector3 triangleNormal = SurfaceNormalFromIndices(vertexIndexA, vertexIndexB, vertexIndexC);
-    //        vertexNormals[vertexIndexA] += triangleNormal;
-    //        vertexNormals[vertexIndexB] += triangleNormal;
-    //        vertexNormals[vertexIndexC] += triangleNormal;
-    //    }
+        Vector3[] vertexNormals = new Vector3[vertices.Length];
+        int triangleCount = triangles.Length / 3;
+        for (int i = 0; i < triangleCount; i++) {
+            int normalTriangleIndex = i * 3;
+            int vertexIndexA = triangles[normalTriangleIndex];
+            int vertexIndexB = triangles[normalTriangleIndex + 1];
+            int vertexIndexC = triangles[normalTriangleIndex + 2];
 
-    //    int borderTriangleCount = borderTriangles.Length / 3;
-    //    for (int i = 0; i < borderTriangleCount; i++) {
-    //        int normalTriangleIndex = i * 3;
-    //        int vertexIndexA = borderTriangles[normalTriangleIndex];
-    //        int vertexIndexB = borderTriangles[normalTriangleIndex + 1];
-    //        int vertexIndexC = borderTriangles[normalTriangleIndex + 2];
+            Vector3 triangleNormal = SurfaceNormalFromIndices(vertexIndexA, vertexIndexB, vertexIndexC);
+            vertexNormals[vertexIndexA] += triangleNormal;
+            vertexNormals[vertexIndexB] += triangleNormal;
+            vertexNormals[vertexIndexC] += triangleNormal;
+        }
 
-    //        Vector3 triangleNormal = SurfaceNormalFromIndices(vertexIndexA, vertexIndexB, vertexIndexC);
-    //        if (vertexIndexA >= 0) {
-    //            vertexNormals[vertexIndexA] += triangleNormal;
-    //        }
-    //        if (vertexIndexB >= 0) {
-    //            vertexNormals[vertexIndexB] += triangleNormal;
-    //        }
-    //        if (vertexIndexC >= 0) {
-    //            vertexNormals[vertexIndexC] += triangleNormal;
-    //        }
-    //    }
+        for (int i = 0; i < vertexNormals.Length; i++) {
+            vertexNormals[i].Normalize();
+        }
 
+        return vertexNormals;
 
-    //    for (int i = 0; i < vertexNormals.Length; i++) {
-    //        vertexNormals[i].Normalize();
-    //    }
+    }
 
-    //    return vertexNormals;
+    Vector3 SurfaceNormalFromIndices(int indexA, int indexB, int indexC) {
 
-    //}
+        Vector3[] vertices = mesh.vertices;
 
-    //Vector3 SurfaceNormalFromIndices(int indexA, int indexB, int indexC) {
-    //    Vector3 pointA = (indexA < 0) ? borderVertices[-indexA - 1] : vertices[indexA];
-    //    Vector3 pointB = (indexB < 0) ? borderVertices[-indexB - 1] : vertices[indexB];
-    //    Vector3 pointC = (indexC < 0) ? borderVertices[-indexC - 1] : vertices[indexC];
+        Vector3 pointA = vertices[indexA];
+        Vector3 pointB = vertices[indexB];
+        Vector3 pointC = vertices[indexC];
 
-    //    Vector3 sideAB = pointB - pointA;
-    //    Vector3 sideAC = pointC - pointA;
-    //    return Vector3.Cross(sideAB, sideAC).normalized;
-    //}
+        Vector3 sideAB = pointB - pointA;
+        Vector3 sideAC = pointC - pointA;
+        return Vector3.Cross(sideAB, sideAC).normalized;
+    }
 
     private void CreateShape() {
 
@@ -362,9 +348,10 @@ public class Chunk : MonoBehaviour {
         Instantiate(prefabs.tree, vertices[x, y] + transform.position, Quaternion.identity);
     }
 
-    public void init(int chunkSize, Material defaultMaterial) {
+    public void init(int chunkSize, int amplitude, Material defaultMaterial) {
         this.chunkSize = chunkSize;
         this.defaultMaterial = defaultMaterial;
+        this.amplitude = amplitude;
 
         int succesivePow2 = Mathf.RoundToInt(Mathf.Pow(2, successiveDivisions));
         m = Mathf.RoundToInt(succesivePow2 + 1);
