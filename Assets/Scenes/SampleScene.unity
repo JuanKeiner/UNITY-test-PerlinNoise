@@ -315,7 +315,7 @@ MonoBehaviour:
   _active: 1
   _enableRotation: 1
   _mouseSense: 1.8
-  _enableTranslation: 1
+  _enableTranslation: 0
   _translationSpeed: 55
   _enableMovement: 1
   _movementSpeed: 10
@@ -323,7 +323,7 @@ MonoBehaviour:
   _boostSpeed: 304
   _moveUp: 101
   _moveDown: 113
-  _enableSpeedAcceleration: 1
+  _enableSpeedAcceleration: 0
   _speedAccelerationFactor: 1.5
   _initPositonButton: 114
 --- !u!1 &1833095226
@@ -355,8 +355,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ea46ca5c073d644a63f7f9a4377ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkSize: 256
-  chunckAmplitude: 60
+  chunkSize: 128
+  chunckAmplitude: 64
   defaultMaterial: {fileID: 2100000, guid: 39e9096fca7ee3b47932f29c87f22645, type: 2}
   prefabs: {fileID: 11400000, guid: c22a309d53aa08d4ab5602dfbc8b9e8b, type: 2}
 --- !u!4 &1833095230
@@ -475,7 +475,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1869191009}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 32, y: 64, z: 41.26}
+  m_LocalPosition: {x: 32, y: 256, z: 41.26}
   m_LocalScale: {x: 3.8498, y: 3.8498, z: 3.8498}
   m_Children: []
   m_Father: {fileID: 0}

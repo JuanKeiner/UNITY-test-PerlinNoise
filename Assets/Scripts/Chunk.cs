@@ -10,13 +10,26 @@ public class Chunk : MonoBehaviour {
     float amplitude = 20;
     Material defaultMaterial;
     Vector3[,] vertices;
+    Vector3[] vertexNormalsLocal;
+    bool leftVertexSet;
+    Vector3[] myVertexNormalsLeft;
+    bool topVertexSet;
+    Vector3[] myVertexNormalsTop;
+    bool rightVertexSet;
+    Vector3[] myVertexNormalsRight;
+    bool bottomVertexSet;
+    Vector3[] myVertexNormalsBottom;
     float[,,] neighborHeights;
+    Chunk[] neighborChunks;
     int[] triadsForTriangles;
     int m;
     public Prefabs prefabs;
 
+
     private void CreateMatrix() {
         vertices = new Vector3[m, m];
+        vertexNormalsLocal = new Vector3[vertices.Length];
+
         neighborHeights = new float[successiveDivisions + 1, m, m];
 
         for (int i = 0; i < m; i++) {
@@ -50,16 +63,68 @@ public class Chunk : MonoBehaviour {
         mesh.triangles = triadsForTriangles;
 
         //mesh.RecalculateNormals();
-        mesh.normals = CalculateNormals();
+        calculateNormals();
+        //calculateSideNormals();
+        pushNormals();
+
     }
 
+    internal Vector3[] getSideNormal(int number) {
+        Vector3[] side = new Vector3[m];
 
-    Vector3[] CalculateNormals() {
+        switch (number) {
+            case 2:
+                for (int i = 0; i < mesh.normals.Length; i++) {
+                    int z = Mathf.FloorToInt(i / m);
+                    int x = i % m;
+                    if (z == 0) {
+                        side[x] = mesh.normals[i];
+                    }
+                }
+                break;
+            case 4:
+                for (int i = 0; i < mesh.normals.Length; i++) {
+                    int z = Mathf.FloorToInt(i / m);
+                    int x = i % m;
+                    if (x == 0) {
+                        side[z] = mesh.normals[i];
+                    }
+                }
+                break;
+            case 6:
+                for (int i = 0; i < mesh.normals.Length; i++) {
+                    int z = Mathf.FloorToInt(i / m);
+                    int x = i % m;
+                    if (x == m - 1) {
+                        side[z] = mesh.normals[i];
+                    }
+                }
+                break;
+            case 8:
+                for (int i = 0; i < mesh.normals.Length; i++) {
+                    int z = Mathf.FloorToInt(i / m);
+                    int x = i % m;
+                    if (z == m - 1) {
+                        side[x] = mesh.normals[i];
+                    }
+                }
+                break;
+        }
+
+        return side;
+    }
+
+    void calculateNormals() {
+        myVertexNormalsLeft = new Vector3[m];
+        myVertexNormalsTop = new Vector3[m];
+        myVertexNormalsRight = new Vector3[m];
+        myVertexNormalsBottom = new Vector3[m];
+
 
         int[] triangles = mesh.triangles;
-
-        Vector3[] vertexNormals = new Vector3[vertices.Length];
         int triangleCount = triangles.Length / 3;
+
+
         for (int i = 0; i < triangleCount; i++) {
             int normalTriangleIndex = i * 3;
             int vertexIndexA = triangles[normalTriangleIndex];
@@ -67,17 +132,94 @@ public class Chunk : MonoBehaviour {
             int vertexIndexC = triangles[normalTriangleIndex + 2];
 
             Vector3 triangleNormal = SurfaceNormalFromIndices(vertexIndexA, vertexIndexB, vertexIndexC);
-            vertexNormals[vertexIndexA] += triangleNormal;
-            vertexNormals[vertexIndexB] += triangleNormal;
-            vertexNormals[vertexIndexC] += triangleNormal;
+            vertexNormalsLocal[vertexIndexA] += triangleNormal;
+            vertexNormalsLocal[vertexIndexB] += triangleNormal;
+            vertexNormalsLocal[vertexIndexC] += triangleNormal;
+
         }
 
-        for (int i = 0; i < vertexNormals.Length; i++) {
-            vertexNormals[i].Normalize();
+    }
+
+    void calculateSideNormals() {
+
+        Vector3[] _2side, _4side, _6side, _8side;
+        bool bottom = neighborChunks[2] != null;
+        bool left = neighborChunks[4] != null;
+        bool right = neighborChunks[6] != null;
+        bool top = neighborChunks[8] != null;
+        if (bottom) _2side = neighborChunks[2].getSideNormal(2);
+        else _2side = new Vector3[0];
+
+        if (left) _4side = neighborChunks[4].getSideNormal(4);
+        else _4side = new Vector3[0];
+
+        if (right) _6side = neighborChunks[6].getSideNormal(6);
+        else _6side = new Vector3[0];
+
+        if (top) _8side = neighborChunks[8].getSideNormal(8);
+        else _8side = new Vector3[0];
+
+        for (int i = 0; i < vertexNormalsLocal.Length; i++) {
+
+            int z = Mathf.FloorToInt(i / m);
+            int x = i % m;
+
+            if (x == 0 && left && !leftVertexSet) {
+                myVertexNormalsLeft[z] = _4side[z];
+                leftVertexSet = true;
+                neighborChunks[4].setNeighborChunk(6, GetComponent<Chunk>());
+                neighborChunks[4].calculateSideNormals();
+            }
+            if (x == m - 1 && right && !rightVertexSet) {
+                myVertexNormalsRight[z] = _6side[z];
+                rightVertexSet = true;
+                neighborChunks[6].setNeighborChunk(4, GetComponent<Chunk>());
+                neighborChunks[6].calculateSideNormals();
+            }
+            if (z == 0 && bottom && !bottomVertexSet) {
+                myVertexNormalsBottom[x] = _2side[z];
+                bottomVertexSet = true;
+                neighborChunks[2].setNeighborChunk(8, GetComponent<Chunk>());
+                neighborChunks[2].calculateSideNormals();
+            }
+            if (z == m - 1 && top && !topVertexSet) {
+                myVertexNormalsTop[x] = _8side[z];
+                topVertexSet = true;
+                neighborChunks[8].setNeighborChunk(2, GetComponent<Chunk>());
+                neighborChunks[8].calculateSideNormals();
+            }
+        }
+    }
+
+    private void pushNormals() {
+
+        Vector3[] finalNormals = vertexNormalsLocal;
+
+        for (int i = 0; i < finalNormals.Length; i++) {
+
+            int z = Mathf.FloorToInt(i / m);
+            int x = i % m;
+
+
+            if (x == 0 && leftVertexSet) {
+                finalNormals[i] = Vector3.down;
+                //finalNormals[i] += myVertexNormalsLeft[z];
+            }
+            if (x == m - 1 && rightVertexSet) {
+                finalNormals[i] += myVertexNormalsRight[z];
+            }
+            if (z == 0 && bottomVertexSet) {
+                finalNormals[i] += myVertexNormalsBottom[z];
+            }
+            if (z == m - 1 && topVertexSet) {
+                finalNormals[i] += myVertexNormalsTop[z];
+            }
+
+
+            finalNormals[i].Normalize();
         }
 
-        return vertexNormals;
-
+        mesh.normals = finalNormals;
     }
 
     Vector3 SurfaceNormalFromIndices(int indexA, int indexB, int indexC) {
@@ -105,7 +247,7 @@ public class Chunk : MonoBehaviour {
                 for (int j = 0; j < m; j++) {
                     if (i % waveIndex == 0 && j % waveIndex == 0) {
                         if (neighborHeights[waves, i, j] == 0f) {
-                            thisWave[i, j] = Random.Range(0, amplitude / Mathf.Pow(2, waves));
+                            thisWave[i, j] = Random.Range(0, amplitude / Mathf.Pow(2.5f, waves));
                             neighborHeights[waves, i, j] = thisWave[i, j];
                         } else thisWave[i, j] = neighborHeights[waves, i, j];
                     }
@@ -203,6 +345,10 @@ public class Chunk : MonoBehaviour {
 
     }
 
+    internal void setNeighborChunk(int i, Chunk chunk) {
+        neighborChunks[i] = chunk;
+    }
+
     internal float[,] getSide(int number) {
         float[,] side = new float[successiveDivisions + 1, m];
 
@@ -261,7 +407,7 @@ public class Chunk : MonoBehaviour {
         return side;
     }
 
-    internal void setNeighbor(int neighbor, float[,] vec) {
+    internal void setNeighborHeights(int neighbor, float[,] vec) {
         switch (neighbor) {
             case 1:
                 for (int k = 0; k < successiveDivisions + 1; k++) {
@@ -348,10 +494,16 @@ public class Chunk : MonoBehaviour {
         Instantiate(prefabs.tree, vertices[x, y] + transform.position, Quaternion.identity);
     }
 
+    public ref Mesh getMesh() {
+        return ref mesh;
+    }
+
     public void init(int chunkSize, int amplitude, Material defaultMaterial) {
         this.chunkSize = chunkSize;
         this.defaultMaterial = defaultMaterial;
         this.amplitude = amplitude;
+
+        neighborChunks = new Chunk[10];
 
         int succesivePow2 = Mathf.RoundToInt(Mathf.Pow(2, successiveDivisions));
         m = Mathf.RoundToInt(succesivePow2 + 1);
