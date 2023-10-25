@@ -18,7 +18,15 @@ public class ChunkGenerator : MonoBehaviour {
     [SerializeField]
     int chunkSize = 256;
     [SerializeField]
-    int chunckAmplitude = 20;
+    int chunkAmplitude = 20;
+    [SerializeField]
+    int chunkSuccesiveDivisions = 5;
+    [SerializeField]
+    float chunkPersistance = 2f;
+    [SerializeField]
+    float chunkGenerationDelay = 0.01f;
+    [SerializeField]
+    bool increasedChunkSpawn = false;
     [SerializeField]
     Material defaultMaterial;
     public Prefabs prefabs;
@@ -58,139 +66,139 @@ public class ChunkGenerator : MonoBehaviour {
             if (xChunk == playerChunk.x     && zChunk == playerChunk.z - 1) chunk2 = true;
             if (xChunk == playerChunk.x + 1 && zChunk == playerChunk.z - 1) chunk3 = true;
 
+            if (increasedChunkSpawn) {
+                if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z + 2) chunk77 = true;
+                if (xChunk == playerChunk.x - 1 && zChunk == playerChunk.z + 2) chunk78 = true;
+                if (xChunk == playerChunk.x - 0 && zChunk == playerChunk.z + 2) chunk88 = true;
+                if (xChunk == playerChunk.x + 1 && zChunk == playerChunk.z + 2) chunk98 = true;
+                if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z + 2) chunk99 = true;
 
-            if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z + 2) chunk77 = true;
-            if (xChunk == playerChunk.x - 1 && zChunk == playerChunk.z + 2) chunk78 = true;
-            if (xChunk == playerChunk.x - 0 && zChunk == playerChunk.z + 2) chunk88 = true;
-            if (xChunk == playerChunk.x + 1 && zChunk == playerChunk.z + 2) chunk98 = true;
-            if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z + 2) chunk99 = true;
+                if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z - 2) chunk11 = true;
+                if (xChunk == playerChunk.x - 1 && zChunk == playerChunk.z - 2) chunk12 = true;
+                if (xChunk == playerChunk.x - 0 && zChunk == playerChunk.z - 2) chunk22 = true;
+                if (xChunk == playerChunk.x + 1 && zChunk == playerChunk.z - 2) chunk32 = true;
+                if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z - 2) chunk33 = true;
 
-            if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z - 2) chunk11 = true;
-            if (xChunk == playerChunk.x - 1 && zChunk == playerChunk.z - 2) chunk12 = true;
-            if (xChunk == playerChunk.x - 0 && zChunk == playerChunk.z - 2) chunk22 = true;
-            if (xChunk == playerChunk.x + 1 && zChunk == playerChunk.z - 2) chunk32 = true;
-            if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z - 2) chunk33 = true;
+                if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z + 1) chunk74 = true;
+                if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z + 0) chunk44 = true;
+                if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z - 1) chunk14 = true;
 
-            if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z + 1) chunk74 = true;
-            if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z + 0) chunk44 = true;
-            if (xChunk == playerChunk.x - 2 && zChunk == playerChunk.z - 1) chunk14 = true;
-
-            if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z + 1) chunk96 = true;
-            if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z + 0) chunk66 = true;
-            if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z - 1) chunk36 = true;
-
+                if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z + 1) chunk96 = true;
+                if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z + 0) chunk66 = true;
+                if (xChunk == playerChunk.x + 2 && zChunk == playerChunk.z - 1) chunk36 = true;
+            }
         }
 
         /*
          Hay que implementar funciones que seteen los vecinos para calcular las normales
          */
-        if (!chunk5 && timerForChunksSpawn<0f) {
+        if (!chunk5 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x, playerChunk.y, playerChunk.z));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
 
         if (!chunk8 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x, playerChunk.y, playerChunk.z + 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk6 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 1, playerChunk.y, playerChunk.z));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk4 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 1, playerChunk.y, playerChunk.z));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk2 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x, playerChunk.y, playerChunk.z - 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
 
         if (!chunk9 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 1, playerChunk.y, playerChunk.z + 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk7 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 1, playerChunk.y, playerChunk.z + 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk3 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 1, playerChunk.y, playerChunk.z - 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk1 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 1, playerChunk.y, playerChunk.z - 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
 
+        if (!increasedChunkSpawn) return;
         if (!chunk88 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x, playerChunk.y, playerChunk.z + 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk78 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 1, playerChunk.y, playerChunk.z + 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk98 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 1, playerChunk.y, playerChunk.z + 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk77 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 2, playerChunk.y, playerChunk.z + 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk99 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 2, playerChunk.y, playerChunk.z + 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
 
         if (!chunk22 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x, playerChunk.y, playerChunk.z - 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk12 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 1, playerChunk.y, playerChunk.z - 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk32 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 1, playerChunk.y, playerChunk.z - 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk11 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 2, playerChunk.y, playerChunk.z - 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk33 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 2, playerChunk.y, playerChunk.z - 2));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
 
         if (!chunk74 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 2, playerChunk.y, playerChunk.z + 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk44 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 2, playerChunk.y, playerChunk.z));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk14 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x - 2, playerChunk.y, playerChunk.z - 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
 
         if (!chunk96 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 2, playerChunk.y, playerChunk.z + 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk66 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 2, playerChunk.y, playerChunk.z));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
         if (!chunk36 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x + 2, playerChunk.y, playerChunk.z - 1));
-            timerForChunksSpawn = 0.05f;
+            timerForChunksSpawn = chunkGenerationDelay;
         }
-
 
     }
 
@@ -203,7 +211,7 @@ public class ChunkGenerator : MonoBehaviour {
         Chunk chunk = newChunkGob.AddComponent<Chunk>();
         int[] neighborsForNormalsSharing = new int[10];
 
-        chunk.init(chunkSize, chunckAmplitude, defaultMaterial);
+        chunk.init(chunkSize, chunkAmplitude, chunkSuccesiveDivisions, chunkPersistance, defaultMaterial);
         
         for (int i = 0; i < chunks.Count; i++) {
             int xChunk = chunks[i].x;

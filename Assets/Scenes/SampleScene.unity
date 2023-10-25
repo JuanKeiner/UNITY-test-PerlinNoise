@@ -14,10 +14,10 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.0001
+  m_FogDensity: 0.03
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -294,7 +294,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 32, y: 64, z: 32}
+  m_LocalPosition: {x: 32, y: 8, z: 32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -356,7 +356,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkSize: 128
-  chunckAmplitude: 64
+  chunkAmplitude: 20
+  chunkSuccesiveDivisions: 5
+  chunkPersistance: 2
+  chunkGenerationDelay: 0.01
+  increasedChunkSpawn: 0
   defaultMaterial: {fileID: 2100000, guid: 39e9096fca7ee3b47932f29c87f22645, type: 2}
   prefabs: {fileID: 11400000, guid: c22a309d53aa08d4ab5602dfbc8b9e8b, type: 2}
 --- !u!4 &1833095230
@@ -392,7 +396,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1869191010
 MonoBehaviour:
   m_ObjectHideFlags: 0
