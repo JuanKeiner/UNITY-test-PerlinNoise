@@ -14,15 +14,11 @@ public class ChunkGenerator : MonoBehaviour {
 
     private List<coordsGameObject> chunks;
     private Vector3Int playerChunk;
-    
+
     [SerializeField]
-    int chunkSize = 256;
+    ChunkParameters chunkParameters;
     [SerializeField]
-    int chunkAmplitude = 20;
-    [SerializeField]
-    int chunkSuccesiveDivisions = 5;
-    [SerializeField]
-    float chunkPersistance = 2f;
+    float debug = 2f;
     [SerializeField]
     float chunkGenerationDelay = 0.01f;
     [SerializeField]
@@ -30,6 +26,7 @@ public class ChunkGenerator : MonoBehaviour {
     [SerializeField]
     Material defaultMaterial;
     public Prefabs prefabs;
+
 
 
     private Transform cameraTransform;
@@ -132,6 +129,7 @@ public class ChunkGenerator : MonoBehaviour {
         }
 
         if (!increasedChunkSpawn) return;
+
         if (!chunk88 && timerForChunksSpawn < 0f) {
             createChunk(new Vector3Int(playerChunk.x, playerChunk.y, playerChunk.z + 2));
             timerForChunksSpawn = chunkGenerationDelay;
@@ -207,11 +205,11 @@ public class ChunkGenerator : MonoBehaviour {
 
         //armamos el GameObject
         GameObject newChunkGob = new GameObject($"{newChunkKeyInt.x}~{newChunkKeyInt.z}");
-        newChunkGob.transform.position = new Vector3(chunkSize * newChunkKeyInt.x, 0f, chunkSize * newChunkKeyInt.z);
+        newChunkGob.transform.position = new Vector3(chunkParameters.size * newChunkKeyInt.x, 0f, chunkParameters.size * newChunkKeyInt.z);
         Chunk chunk = newChunkGob.AddComponent<Chunk>();
         int[] neighborsForNormalsSharing = new int[10];
 
-        chunk.init(chunkSize, chunkAmplitude, chunkSuccesiveDivisions, chunkPersistance, defaultMaterial);
+        chunk.init(chunkParameters, debug, defaultMaterial);
         
         for (int i = 0; i < chunks.Count; i++) {
             int xChunk = chunks[i].x;
@@ -266,8 +264,8 @@ public class ChunkGenerator : MonoBehaviour {
     }
 
     private void findChunk() {
-        playerChunk.x = Mathf.FloorToInt(cameraTransform.position.x / chunkSize);
-        playerChunk.z = Mathf.FloorToInt(cameraTransform.position.z / chunkSize);
+        playerChunk.x = Mathf.FloorToInt(cameraTransform.position.x / chunkParameters.size);
+        playerChunk.z = Mathf.FloorToInt(cameraTransform.position.z / chunkParameters.size);
     }
 
 }
