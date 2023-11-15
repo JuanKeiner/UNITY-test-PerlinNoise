@@ -322,8 +322,14 @@ public class Chunk : MonoBehaviour {
 
         for (int i = 0; i < mesh.vertexCount; i++) {
             //float t = Mathf.Max(mesh.vertices[i].y / (maxHeight), 1-);
-            float t = 1 - Vector3.Dot(Vector3.up, mesh.normals[i]);
-            colors[i] = chunkParameters.gradient.Evaluate(7*t);
+            float t = (1 - Vector3.Dot(Vector3.up, mesh.normals[i]))*8;
+
+            if (t < 0.5f) {
+                colors[i] = chunkParameters.gradientNormals1.Evaluate(t*2f);
+            } else {
+                t -= 0.5f;
+                colors[i] = chunkParameters.gradientNormals2.Evaluate(t*2f);
+            }
             //i++;
         }
 
