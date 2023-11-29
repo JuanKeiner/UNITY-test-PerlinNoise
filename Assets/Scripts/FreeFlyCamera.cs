@@ -6,8 +6,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-public class FreeFlyCamera : MonoBehaviour
-{
+public class FreeFlyCamera : MonoBehaviour {
     #region UI
 
     [Space]
@@ -89,36 +88,30 @@ public class FreeFlyCamera : MonoBehaviour
     private Vector3 _initRotation;
 
 #if UNITY_EDITOR
-    private void OnValidate()
-    {
+    private void OnValidate() {
         if (_boostedSpeed < _movementSpeed)
             _boostedSpeed = _movementSpeed;
     }
 #endif
 
 
-    private void Start()
-    {
+    private void Start() {
         _initPosition = transform.position;
         _initRotation = transform.eulerAngles;
     }
 
-    private void OnEnable()
-    {
+    private void OnEnable() {
         if (_active)
             _wantedMode = CursorLockMode.Locked;
     }
 
     // Apply requested cursor state
-    private void SetCursorState()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
+    private void SetCursorState() {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
             Cursor.lockState = _wantedMode = CursorLockMode.None;
         }
 
-        if (Input.GetMouseButtonDown(0))
-        {
+        if (Input.GetMouseButtonDown(0)) {
             _wantedMode = CursorLockMode.Locked;
         }
 
@@ -128,12 +121,10 @@ public class FreeFlyCamera : MonoBehaviour
         Cursor.visible = (CursorLockMode.Locked != _wantedMode);
     }
 
-    private void CalculateCurrentIncrease(bool moving)
-    {
+    private void CalculateCurrentIncrease(bool moving) {
         _currentIncrease = Time.deltaTime;
 
-        if (!_enableSpeedAcceleration || _enableSpeedAcceleration && !moving)
-        {
+        if (!_enableSpeedAcceleration || _enableSpeedAcceleration && !moving) {
             _currentIncreaseMem = 0;
             return;
         }
@@ -142,8 +133,18 @@ public class FreeFlyCamera : MonoBehaviour
         _currentIncrease = Time.deltaTime + Mathf.Pow(_currentIncreaseMem, 3) * Time.deltaTime;
     }
 
-    private void Update()
-    {
+    private void Update() {
+
+        // Verificar si la tecla Escape ha sido presionada
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            // Cerrar la aplicación
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
         if (!_active)
             return;
 
@@ -153,14 +154,12 @@ public class FreeFlyCamera : MonoBehaviour
             return;
 
         // Translation
-        if (_enableTranslation)
-        {
+        if (_enableTranslation) {
             transform.Translate(Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * _translationSpeed);
         }
 
         // Movement
-        if (_enableMovement)
-        {
+        if (_enableMovement) {
             Vector3 deltaPosition = Vector3.zero;
             float currentSpeed = _movementSpeed;
 
@@ -192,8 +191,7 @@ public class FreeFlyCamera : MonoBehaviour
         }
 
         // Rotation
-        if (_enableRotation)
-        {
+        if (_enableRotation) {
             // Pitch
             transform.rotation *= Quaternion.AngleAxis(
                 -Input.GetAxis("Mouse Y") * _mouseSense,
@@ -209,8 +207,7 @@ public class FreeFlyCamera : MonoBehaviour
         }
 
         // Return to init position
-        if (Input.GetKeyDown(_initPositonButton))
-        {
+        if (Input.GetKeyDown(_initPositonButton)) {
             transform.position = _initPosition;
             transform.eulerAngles = _initRotation;
         }
